@@ -96,7 +96,7 @@ Another limitation is that creating a Worker is costly operation, and takes much
 
 # Usage
 
-Currently library can be tested on the example programs, that are 
+Currently library can be tested on the example program, that sorts a large array of integers using bucket sort algorithm.
 
 Install dependencies:
 ```
