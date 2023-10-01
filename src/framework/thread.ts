@@ -40,8 +40,7 @@ export class ThreadExecution<Arg, Ret> {
 
   wait(): Promise<Ret> {
     return new Promise((resolve, reject) => {
-      this.worker.on("message", (msg: string) => {
-        const message = ThreadMessage.deserialize(msg);
+      this.worker.on("message", (message: ThreadMessage) => {
         if (message.type === ThreadMessageType.FINISHED) {
           resolve(message.payload);
         }

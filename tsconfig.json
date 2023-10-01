@@ -109,6 +109,7 @@
     ],
   },
   "files": [
-    "./src/index.ts"
+    "./src/bucket-sorting-single-thread.ts",
+    "./src/bucket-sorting-multithread.ts"
   ]
 }

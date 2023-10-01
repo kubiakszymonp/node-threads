@@ -6,9 +6,7 @@ export const hardTask = (arg: {
   b: number;
   c: boolean;
 }) => {
-  
-  console.log("hard task");
-  console.log({ arg });
+  console.log( arg );
   const p = join(__dirname, "dupa.txt");
   console.log("writing to file: ", p);
   writeFileSync(p, "dupa from hard task");

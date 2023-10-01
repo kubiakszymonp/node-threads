@@ -1,6 +1,6 @@
 import * as ts from "typescript";
 import type { TransformerExtras, PluginConfig } from "ts-patch";
-import { printNode } from "./utils";
+import { printNode } from "./node-printing";
 
 let importTable: Record<string, string>;
 
@@ -106,13 +106,11 @@ export const threadObjectCreationNodeTransformator = (
   return node;
 };
 
-
 export default (
   program: ts.Program,
   pluginConfig: PluginConfig,
   { ts: tsInstance }: TransformerExtras
 ) => {
-  console.log("debugging")
   return (ctx: ts.TransformationContext) => {
     return (sourceFile: ts.SourceFile) => {
       function visit(node: ts.Node): ts.Node {
@@ -125,7 +123,7 @@ export default (
         sourceFile,
         visit
       ) as ts.SourceFile;
-      printNode(transformedSource, tsInstance);
+      //printNode(transformedSource, tsInstance);
       return transformedSource;
     };
   };
