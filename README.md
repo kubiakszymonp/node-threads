@@ -24,7 +24,9 @@ const runningThread1 = thread.run({ some: "data" });
 
 const runningThread2 = thread.run({ some: "other data" });
 
-const result = await runningThread1.wait();
+const result1 = await runningThread1.wait();
+
+const result2 = await runningThread2.wait();
 ```
 
 ```typescript
