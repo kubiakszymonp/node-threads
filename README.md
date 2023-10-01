@@ -1,10 +1,17 @@
 # Introduction
 
-This project's purpose is to simplify working with Node.js worker threads.
+With the ever-growing need for performance and scalability in modern web applications, making multithreading more accessible and intuitive in Node.js becomes paramount. 
+This project bridges the gap, allowing developers to harness the power of multiple cores without getting entangled in the complexities.
+
+While Node.js offers worker threads for multithreading, the intricacies and boilerplate code often deter developers. This project serves as an intuitive interface, making multithreading as straightforward as writing typical single-threaded code.
 
 # Goal
 
-This project aims to provide a simple interface for running multithreaded applications in Node.js. Calling methods on threads works like this:
+This project aims to provide very simple interface for running multithreaded applications in Node.js. 
+
+Running the code above will create a new Thread object that will be treated as a receipt for running some work.
+
+Then the Thread object can be used many times to execute with parameters in detached mode (default), or in joined mode (wait for result) - using `wait()`. Result will be returned as a Promise.
 
 ```typescript
 // index.ts
@@ -12,15 +19,21 @@ This project aims to provide a simple interface for running multithreaded applic
 import { someFunction } from "./someFile";
 
 const thread = new Thread(someFunction);
-const runningThread = thread.run({ some: "data" });
-const result = await runningThread.wait();
+
+const runningThread1 = thread.run({ some: "data" });
+
+const runningThread2 = thread.run({ some: "other data" });
+
+const result = await runningThread1.wait();
 ```
 
 ```typescript
 // someFile.ts
 
 export function someFunction(data: { some: string }) {
+
   console.log(data.some);
+
   return data;
 }
 ```
@@ -36,7 +49,7 @@ This project contains of two main components:
 
 Located in: ``./src/compilation-transformers/``
 
-Uses [ts-patch](https://github.com/nonara/ts-patch) library, to transform code before compilation.
+Uses [ts-patch](https://github.com/nonara/ts-patch) library, to wrap the typescript compiler, and hook into the compilation process and transform code before compilation.
 
 It transforms Thread() object creation, from the type-safe version, to the runtime version:
 
@@ -64,12 +77,24 @@ Then, module resolution can be done correctly, and the function can be easily st
 
 Located in: ``./src/framework/``
 
-It is a simple wrapper around the worker threads, that provides a simple interface for running threads, and waiting for their results.
+It is a simple wrapper around the worker threads, that provides a friendly interface for running threads, and waiting for their results.
 
 Uses different types of WorkerMessages, to return data, or throw errors from the worker thread.
 
 
+# Limitations
+
+Unfortunately `worker_threads` in Node.js are not exactly as `threads` in other languages. They have separated execution context, and can share memory with limitations.
+
+In practice, data that is shared between threads, needs to be serializable. This means that you can't share functions, classes, or any other objects that are not simple objects, and built-in types - [official documentation](https://nodejs.org/api/worker_threads.html#worker_threads_port_postmessage_value_transferlist)
+
+Another limitation is that creating a Worker is costly operation, and takes much time. At my machine, it takes around 0.5s to create a new Worker. This means that creating a new Worker for every task is not a good idea. Instead, it is better to create a pool of Workers, and reuse them for different tasks. (Perspective to implement in the future)
+
+
+
 # Usage
+
+Currently library can be tested on the example programs, that are 
 
 Install dependencies:
 ```
@@ -81,19 +106,21 @@ Compile example programs using ts-patch compiler:
 npm run build
 ```
 
-Run example programs, using node:
+Run example program, using node:
 ```
-node ./build/bucket-sorting-thtead.js
-node ./build/bucket-sorting-multithread.js
+node build/examples/bucket-sort/index.js
 ```
 
 # Results
 
 For following input data:
 
-```
-600_000 Integers at range 0 - 100_000
+800_000 Integers at range 0 - 100_000_000
 Number of buckets (threads): 3
-Single threaded time: ~ 36s
-Multi threaded time: ~ 12s
+
+``` bash
+Started multiple thread test
+bucketSortMultiThread: 26.052s
+Started single thread test
+bucketSortSingleThread: 1:09.532 (m:ss.mmm)
 ```

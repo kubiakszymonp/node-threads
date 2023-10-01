@@ -11,3 +11,7 @@ export const insertionSort = (arr: number[]): number[] => {
 
   return arr;
 };
+
+export const quickSort = (arr: number[]) => {
+  return arr.sort((a, b) => a - b);
+};
