@@ -1,6 +1,9 @@
 import { generateNumberArray } from "./bucket-sort-data-generation";
 import { insertionSort } from "./insertion-sort";
 
+const BUCKET_COUNT = 3;
+const NUM_OF_NUMBERS = 600_000;
+
 const bucketSortSingleThread = (dataset: number[]) => {
   
   let min = dataset[0];
@@ -9,12 +12,12 @@ const bucketSortSingleThread = (dataset: number[]) => {
     if (dataset[i] < min) min = dataset[i];
     if (dataset[i] > max) max = dataset[i];
   }
-  const bucketCount = 3;
-  const bucketSize = Math.ceil((max - min + 1) / bucketCount);
+
+  const bucketSize = Math.ceil((max - min + 1) / BUCKET_COUNT);
 
   // Create buckets
   const buckets: number[][] = [];
-  for (let i = 0; i < bucketCount; i++) {
+  for (let i = 0; i < BUCKET_COUNT; i++) {
     buckets[i] = [];
   }
 
@@ -33,7 +36,7 @@ const bucketSortSingleThread = (dataset: number[]) => {
   return ([] as number[]).concat(...buckets);
 };
 
-const dataset = generateNumberArray(60_0_000, 100_000);
+const dataset = generateNumberArray(NUM_OF_NUMBERS, 100_000);
 console.time("bucketSortSingleThread");
 bucketSortSingleThread(dataset);
 console.timeEnd("bucketSortSingleThread");
